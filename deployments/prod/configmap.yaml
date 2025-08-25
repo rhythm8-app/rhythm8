@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rhythm8-config
+  namespace: rhythm8-prod
+data:
+  POCKETBASE_URL: "http://pocketbase:8090"
+  API_V1_STR: "/api/v1"
+  PROJECT_NAME: "rhythm∞ API"
+  VERSION: "0.1.0"
+  BACKEND_CORS_ORIGINS: "https://rhythm8.app"

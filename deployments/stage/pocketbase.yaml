@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pocketbase
+  namespace: rhythm8-stage
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pocketbase
+  template:
+    metadata:
+      labels:
+        app: pocketbase
+    spec:
+      containers:
+      - name: pocketbase
+        image: ghcr.io/muchobien/pocketbase:latest
+        ports:
+        - containerPort: 8090
+        command: ["pocketbase", "serve", "--http", "0.0.0.0:8090", "--dir", "/pb_data"]
+        volumeMounts:
+        - name: pocketbase-data
+          mountPath: /pb_data
+        env:
+        - name: POCKETBASE_ADMIN_EMAIL
+          valueFrom:
+            secretKeyRef:
+              name: rhythm8-secrets
+              key: POCKETBASE_ADMIN_EMAIL
+        - name: POCKETBASE_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: rhythm8-secrets
+              key: POCKETBASE_ADMIN_PASSWORD
+      volumes:
+      - name: pocketbase-data
+        persistentVolumeClaim:
+          claimName: pocketbase-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pocketbase
+  namespace: rhythm8-stage
+spec:
+  selector:
+    app: pocketbase
+  ports:
+  - port: 8090
+    targetPort: 8090
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pocketbase-pvc
+  namespace: rhythm8-stage
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi

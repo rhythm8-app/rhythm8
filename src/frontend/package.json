@@ -1,0 +1,40 @@
+{
+  "name": "@rhythm-infinity/frontend",
+  "version": "0.1.0",
+  "description": "Vue.js 3 + Vuetify frontend for rhythm∞",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
+    "type-check": "vue-tsc --noEmit -p tsconfig.json --composite false"
+  },
+  "dependencies": {
+    "@mdi/font": "^7.4.47",
+    "@vueuse/core": "^10.5.0",
+    "axios": "^1.6.2",
+    "pinia": "^2.1.7",
+    "vue": "^3.3.8",
+    "vue-router": "^4.2.5",
+    "vuetify": "^3.4.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.8.10",
+    "@vitejs/plugin-vue": "^4.4.1",
+    "@vue/eslint-config-prettier": "^8.0.0",
+    "@vue/eslint-config-typescript": "^12.0.0",
+    "@vue/tsconfig": "^0.4.0",
+    "eslint": "^8.52.0",
+    "eslint-plugin-vue": "^9.17.0",
+    "prettier": "^3.0.3",
+    "typescript": "^5.2.2",
+    "vite": "^4.5.0",
+    "vite-plugin-vuetify": "^2.0.1",
+    "vitest": "^0.34.6",
+    "vue-tsc": "^2.2.12"
+  }
+}

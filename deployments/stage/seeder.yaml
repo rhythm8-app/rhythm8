@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: seeder
+  namespace: rhythm8-stage
+spec:
+  template:
+    spec:
+      containers:
+      - name: seeder
+        image: rhythm8/seeder:stage
+        env:
+        - name: POCKETBASE_URL
+          value: "http://pocketbase:8090"
+        - name: POCKETBASE_ADMIN_EMAIL
+          valueFrom:
+            secretKeyRef:
+              name: rhythm8-secrets
+              key: POCKETBASE_ADMIN_EMAIL
+        - name: POCKETBASE_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: rhythm8-secrets
+              key: POCKETBASE_ADMIN_PASSWORD
+      restartPolicy: OnFailure
+  backoffLimit: 3

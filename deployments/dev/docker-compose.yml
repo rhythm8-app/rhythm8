@@ -1,0 +1,75 @@
+services:
+  pocketbase:
+    image: ghcr.io/muchobien/pocketbase:latest
+    container_name: rhythm8_pocketbase
+    restart: unless-stopped
+    command: ["pocketbase", "serve", "--http", "0.0.0.0:8090", "--dir", "/pb_data"]
+    ports:
+      - "8090:8090"
+    volumes:
+      - pocketbase_data:/pb_data
+    environment:
+      - POCKETBASE_ADMIN_EMAIL=${POCKETBASE_ADMIN_EMAIL:-admin@rhythm8.local}
+      - POCKETBASE_ADMIN_PASSWORD=${POCKETBASE_ADMIN_PASSWORD:-adminpassword123}
+    networks:
+      - rhythm8_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.pocketbase.rule=Host(`api.rhythm8.local`)"
+      - "traefik.http.services.pocketbase.loadbalancer.server.port=8090"
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: rhythm8_mailpit
+    restart: unless-stopped
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    environment:
+      - MP_SMTP_AUTH_ACCEPT_ANY=1
+      - MP_SMTP_AUTH_ALLOW_INSECURE=1
+    networks:
+      - rhythm8_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mailpit.rule=Host(`mail.rhythm8.local`)"
+      - "traefik.http.services.mailpit.loadbalancer.server.port=8025"
+
+  seeder:
+    build:
+      context: ../../src/seeder
+      dockerfile: Dockerfile
+    container_name: rhythm8_seeder
+    depends_on:
+      - pocketbase
+    environment:
+      - POCKETBASE_URL=http://pocketbase:8090
+      - POCKETBASE_ADMIN_EMAIL=${POCKETBASE_ADMIN_EMAIL:-admin@rhythm8.local}
+      - POCKETBASE_ADMIN_PASSWORD=${POCKETBASE_ADMIN_PASSWORD:-adminpassword123}
+    networks:
+      - rhythm8_network
+    restart: "no"
+
+  traefik:
+    image: traefik:v2.10
+    container_name: rhythm8_traefik
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "8080:8080"
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    networks:
+      - rhythm8_network
+
+volumes:
+  pocketbase_data:
+
+networks:
+  rhythm8_network:
+    driver: bridge

@@ -1,0 +1,36 @@
+{
+  "name": "rhythm-infinity",
+  "version": "0.1.0",
+  "description": "Digital organization platform for dancers - Your dance plans, sorted!",
+  "author": "rhythm∞ Team",
+  "license": "MIT",
+  "private": true,
+  "workspaces": [
+    "src/frontend",
+    "src/backend",
+    "src/seeder"
+  ],
+  "scripts": {
+    "dev": "docker-compose -f deployments/dev/docker-compose.yml up -d",
+    "dev:down": "docker-compose -f deployments/dev/docker-compose.yml down",
+    "dev:logs": "docker-compose -f deployments/dev/docker-compose.yml logs -f",
+    "build": "npm run build --workspaces",
+    "test": "npm run test --workspaces",
+    "lint": "npm run lint --workspaces",
+    "type-check": "npm run type-check --workspaces"
+  },
+  "keywords": [
+    "dance",
+    "organization",
+    "events",
+    "training",
+    "travel",
+    "vue",
+    "fastapi",
+    "pocketbase"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/rhythm-infinity.git"
+  }
+}
