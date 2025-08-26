@@ -1,12 +1,17 @@
 {
   "name": "@rhythm-infinity/seeder",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Database seeder for rhythm∞ Pocketbase",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "start": "tsx src/index.ts",
+    "seed": "tsx src/index.ts",
+    "migrate": "tsx src/cli.ts",
+    "migrate:only": "tsx src/index.ts --migrate-only",
+    "migrate:status": "tsx src/cli.ts status",
+    "migrate:create": "tsx src/cli.ts create",
     "build": "tsc",
     "test": "vitest",
     "lint": "eslint src/ --ext .ts --fix",

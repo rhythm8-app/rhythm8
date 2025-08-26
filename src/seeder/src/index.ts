@@ -1,26 +1,34 @@
 import PocketBase from 'pocketbase'
 import { config } from './config.js'
-import { setupCollections } from './collections/index.js'
+import { runMigrations, getCurrentVersion } from './migrations/index.js'
+import { migrations } from './migrations/registry.js'
 import { seedData } from './seeds/index.js'
 
 async function main() {
-  console.log('🌱 Starting database seeding process...')
+  console.log('🌱 Starting database setup process...')
+  console.log(' pocketbase url:', config.pocketbaseUrl)
   
   const pb = new PocketBase(config.pocketbaseUrl)
   
   try {
-    await pb.admins.authWithPassword(config.adminEmail, config.adminPassword)
+    await pb.collection('_superusers').authWithPassword(config.adminEmail, config.adminPassword)
     console.log('✅ Connected to Pocketbase as admin')
     
-    await setupCollections(pb)
-    console.log('✅ Collections setup completed')
+    const currentVersion = await getCurrentVersion(pb)
+    console.log(`📊 Current database version: ${currentVersion || 'none'}`)
     
-    await seedData(pb)
-    console.log('✅ Data seeding completed')
+    await runMigrations(pb, migrations)
+    console.log('✅ Migrations completed')
     
-    console.log('🎉 Database seeding process completed successfully!')
+    const args = process.argv.slice(2)
+    if (!args.includes('--migrate-only')) {
+      await seedData(pb)
+      console.log('✅ Data seeding completed')
+    }
+    
+    console.log('🎉 Database setup process completed successfully!')
   } catch (error) {
-    console.error('❌ Error during seeding process:', error)
+    console.error('❌ Error during setup process:', error)
     process.exit(1)
   }
 }

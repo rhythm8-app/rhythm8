@@ -4,12 +4,15 @@ export async function createEventsCollection(pb: PocketBase) {
   const collectionName = 'events'
   
   try {
-    await pb.collections.getOne(collectionName)
+    const existingCollection = await pb.collections.getOne(collectionName)
     console.log(`📋 Collection '${collectionName}' already exists`)
+    return existingCollection
   } catch (error) {
     console.log(`📋 Creating collection '${collectionName}'...`)
     
-    await pb.collections.create({
+    const usersCollection = await pb.collections.getOne('users').catch(() => null)
+    
+    const collection = await pb.collections.create({
       name: collectionName,
       type: 'base',
       schema: [
@@ -66,7 +69,7 @@ export async function createEventsCollection(pb: PocketBase) {
           type: 'relation',
           required: false,
           options: {
-            collectionId: 'users',
+            collectionId: usersCollection?.id || '',
             cascadeDelete: false,
             minSelect: null,
             maxSelect: 1,
@@ -75,5 +78,7 @@ export async function createEventsCollection(pb: PocketBase) {
         }
       ]
     })
+    
+    return collection
   }
 }
